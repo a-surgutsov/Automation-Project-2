@@ -15,16 +15,12 @@ class IssueModal {
         this.confirmationPopup = '[data-testid="modal:confirm"]';
         this.closeDetailModalButton = '[data-testid="icon:close"]';
         this.issueTask = 'This is an issue of type: Task.';
-
-        this.issueDetailsModal = '[data-testid="modal:issue-details"]';
-        this.iconStopwatch = '[data-testid="icon:stopwatch"]';
-        this.noTimeLogged = "No time logged";
+        
         this.numberPlaceholder = 'input[placeholder="Number"]';
-        this.closeIssueModalWindow = '[data-testid="icon:close"]';
+        this.iconClose = '[data-testid="icon:close"]';
         this.trackingModal = '[data-testid="modal:tracking"]';
+        this.iconStopwatch = '[data-testid="icon:stopwatch"]';
         this.buttonDone = "Done";
-        this.timeTrackerStopwatch = '[data-testid="icon:stopwatch"]';
-
     }
 
     getIssueModal() {
@@ -144,7 +140,7 @@ addEstimation(estimatedTime) {
 }
 
 validateAddedEstimation(estimatedTime) {
-  cy.get(this.closeIssueModalWindow).eq(0).click();
+  cy.get(this.iconClose).eq(0).click();
   cy.get(this.backlogList).should("be.visible").contains(this.issueTask).click();
   cy.get(this.issueDetailModal).within(() => {
     cy.get(this.numberPlaceholder).should("have.value", estimatedTime);
@@ -162,7 +158,7 @@ editEstimation(editedEstimatedTime) {
 }
 
 validateEditedEstimation(editedEstimatedTime) {
-  cy.get(this.closeIssueModalWindow).eq(0).click();
+  cy.get(this.iconClose).eq(0).click();
   cy.get(this.backlogList).should("be.visible").contains(this.issueTask).click();
   cy.get(this.issueDetailModal).within(() => {
     cy.get(this.numberPlaceholder).should("have.value", editedEstimatedTime);
@@ -177,7 +173,7 @@ removingEstimation() {
 }
 
 validateRemovedEstimation() {
-  cy.get(this.closeIssueModalWindow).eq(0).click();
+  cy.get(this.iconClose).eq(0).click();
   cy.get(this.backlogList).should("be.visible").contains(this.issueTask).click();
   cy.get(this.issueDetailModal).within(() => {
     cy.get(this.numberPlaceholder).should("exist");
