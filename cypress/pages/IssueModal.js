@@ -14,6 +14,17 @@ class IssueModal {
         this.cancelDeletionButtonName = "Cancel";
         this.confirmationPopup = '[data-testid="modal:confirm"]';
         this.closeDetailModalButton = '[data-testid="icon:close"]';
+        this.issueTask = 'This is an issue of type: Task.';
+
+        this.issueDetailsModal = '[data-testid="modal:issue-details"]';
+        this.iconStopwatch = '[data-testid="icon:stopwatch"]';
+        this.noTimeLogged = "No time logged";
+        this.numberPlaceholder = 'input[placeholder="Number"]';
+        this.closeIssueModalWindow = '[data-testid="icon:close"]';
+        this.trackingModal = '[data-testid="modal:tracking"]';
+        this.buttonDone = "Done";
+        this.timeTrackerStopwatch = '[data-testid="icon:stopwatch"]';
+
     }
 
     getIssueModal() {
@@ -116,6 +127,107 @@ class IssueModal {
         cy.get(this.issueDetailModal).get(this.closeDetailModalButton).first().click();
         cy.get(this.issueDetailModal).should('not.exist');
     }
+
+
+// Assignment #2
+
+addEstimation(estimatedTime) {
+  cy.get(this.issueDetailModal).within(() => {
+    cy.get(this.numberPlaceholder)
+      .clear()
+      .type(estimatedTime)
+      .should("have.value", estimatedTime);
+    cy.get(this.iconStopwatch)
+        .next()
+        .contains(estimatedTime + "h estimated");
+  });
+}
+
+validateAddedEstimation(estimatedTime) {
+  cy.get(this.closeIssueModalWindow).eq(0).click();
+  cy.get(this.backlogList).should("be.visible").contains(this.issueTask).click();
+  cy.get(this.issueDetailModal).within(() => {
+    cy.get(this.numberPlaceholder).should("have.value", estimatedTime);
+  });
+}
+
+editEstimation(editedEstimatedTime) {
+  cy.get(this.numberPlaceholder)
+    .clear()
+    .type(editedEstimatedTime)
+    .should("have.value", editedEstimatedTime);
+  cy.get(this.iconStopwatch)
+    .next()
+    .contains(editedEstimatedTime + "h estimated");
+}
+
+validateEditedEstimation(editedEstimatedTime) {
+  cy.get(this.closeIssueModalWindow).eq(0).click();
+  cy.get(this.backlogList).should("be.visible").contains(this.issueTask).click();
+  cy.get(this.issueDetailModal).within(() => {
+    cy.get(this.numberPlaceholder).should("have.value", editedEstimatedTime);
+  });
+}
+
+removingEstimation() {
+  cy.get(this.numberPlaceholder)
+    .clear()
+    .should("be.empty");
+  cy.get(this.issueDetailModal).contains("Original Estimate (hours)").click();
+}
+
+validateRemovedEstimation() {
+  cy.get(this.closeIssueModalWindow).eq(0).click();
+  cy.get(this.backlogList).should("be.visible").contains(this.issueTask).click();
+  cy.get(this.issueDetailModal).within(() => {
+    cy.get(this.numberPlaceholder).should("exist");
+  });
+}
+
+
+
+
+
+logTime(timeSpent, timeRemaining) {
+  cy.get(this.iconStopwatch).click();
+  cy.get(this.trackingModal).within(() => {
+    cy.get(this.numberPlaceholder)
+      .eq(0)
+      .clear()
+      .type(timeSpent);
+    cy.get(this.numberPlaceholder)
+      .eq(1)
+      .clear()
+      .type(timeRemaining);
+    cy.contains("button", this.buttonDone).click();
+  });
+  cy.get(this.trackingModal).should("not.exist");
+}
+
+validateLogTime(timeSpent, timeRemaining) {
+  cy.get(this.issueDetailModal).within(() => {
+    cy.contains(`${timeSpent}h logged`).should("be.visible");
+    cy.contains(`${timeRemaining}h remaining`).should("be.visible");
+  });
+}
+
+removeLoggedTime() {
+  cy.get(this.iconStopwatch).click();
+  cy.get(this.trackingModal).within(() => {
+    cy.get(this.numberPlaceholder).eq(0).clear();
+    cy.get(this.numberPlaceholder).eq(1).clear();
+    cy.contains("button", this.buttonDone).click();
+  });
+  cy.get(this.trackingModal).should("not.exist");
+}
+
+validateLoggedTimeRemoved(timeSpent, timeRemaining) {
+  cy.get(this.issueDetailModal).within(() => {
+    cy.contains(`${timeSpent}h logged`).should("not.exist");
+    cy.contains(`${timeRemaining}h remaining`).should("not.exist");
+    cy.contains("No time logged").should("be.visible");
+  });
+}
 }
 
 export default new IssueModal();
